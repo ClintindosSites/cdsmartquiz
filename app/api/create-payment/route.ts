@@ -13,6 +13,7 @@ export async function POST() {
       body: {
         items: [
           {
+            id: "qi-result",
             title: "Resultado Completo de QI",
             quantity: 1,
             currency_id: "BRL",
@@ -21,16 +22,14 @@ export async function POST() {
         ],
 
         back_urls: {
-          success: "http://localhost:3000/premium-result",
-          failure: "http://localhost:3000/checkout",
-          pending: "http://localhost:3000/checkout",
+          success: "https://SEU-DOMINIO.vercel.app/premium-result",
+          failure: "https://SEU-DOMINIO.vercel.app/checkout",
+          pending: "https://SEU-DOMINIO.vercel.app/checkout",
         },
 
         auto_return: "approved",
       },
     });
-
-    console.log(response);
 
     return NextResponse.json({
       init_point: response.init_point,
