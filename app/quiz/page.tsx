@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { questions } from "@/data/questions";
 import { useRouter } from "next/navigation";
 
@@ -16,28 +17,42 @@ export default function QuizPage() {
   const [screen, setScreen] = useState<"QUESTION" | "INSIGHT">("QUESTION");
 
   const [insightMessage, setInsightMessage] = useState("");
+  const [insightImage, setInsightImage] = useState("");
 
   const question = questions[currentQuestion];
 
   const progress = Math.round(((currentQuestion + 1) / questions.length) * 100);
 
-  // insights estratégicos
-  const insights: Record<number, string> = {
-    2: "Seu desempenho está acima de 74% das pessoas.",
-    5: "Seu padrão cognitivo está acima da média.",
-    8: "Poucas pessoas chegam tão longe com essa precisão.",
+  const insights: Record<
+    number,
+    {
+      text: string;
+      image: string;
+    }
+  > = {
+    2: {
+      text: "Seu desempenho está acima de 74% das pessoas.",
+      image: "/insight-1.png",
+    },
+
+    5: {
+      text: "Seu padrão cognitivo está acima da média.",
+      image: "/insight-2.png",
+    },
+
+    8: {
+      text: "Poucas pessoas chegam tão longe com essa precisão.",
+      image: "/insight-3.png",
+    },
   };
 
   const finishQuiz = (finalScore: number) => {
-    // salva score
     localStorage.setItem("quizScore", String(finalScore));
 
-    // vai para análise
     router.push("/quiz/analyzing");
   };
 
   const handleSelect = (option: string) => {
-    // impede múltiplos cliques
     if (showResult) return;
 
     setSelected(option);
@@ -45,55 +60,41 @@ export default function QuizPage() {
 
     const isCorrect = option === question.answer;
 
-    // score final da rodada
     const updatedScore = isCorrect ? score + 1 : score;
 
-    // feedback visual
     setTimeout(() => {
       const nextQuestion = currentQuestion + 1;
 
-      // verifica se terminou o quiz
       if (nextQuestion >= questions.length) {
         finishQuiz(updatedScore);
         return;
       }
 
-      // mostra insight em perguntas específicas
       if (insights[currentQuestion]) {
-        setInsightMessage(insights[currentQuestion]);
+        setInsightMessage(insights[currentQuestion].text);
+        setInsightImage(insights[currentQuestion].image);
 
-        // muda para tela insight
         setScreen("INSIGHT");
 
-        // espera insight
         setTimeout(() => {
-          // atualiza score
           setScore(updatedScore);
 
-          // reseta estados
           setSelected("");
           setShowResult(false);
 
-          // próxima pergunta
           setCurrentQuestion(nextQuestion);
 
-          // volta tela pergunta
           setScreen("QUESTION");
-        }, 2500);
+        }, 7000);
 
         return;
       }
 
-      // segue normal
-
-      // atualiza score
       setScore(updatedScore);
 
-      // limpa estados
       setSelected("");
       setShowResult(false);
 
-      // próxima pergunta
       setCurrentQuestion(nextQuestion);
     }, 1200);
   };
@@ -160,14 +161,34 @@ export default function QuizPage() {
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center min-h-[400px] animate-pulse">
+          <div className="flex flex-col items-center justify-center text-center min-h-[500px]">
+            {/* imagem */}
+            <Image
+              src={insightImage}
+              alt="Insight"
+              width={220}
+              height={220}
+              className="mb-8 animate-pulse"
+            />
+
+            {/* tag */}
             <div className="text-blue-400 uppercase tracking-[0.3em] text-sm mb-4">
               análise cognitiva
             </div>
 
-            <h2 className="text-4xl font-bold leading-relaxed">
+            {/* texto */}
+            <h2 className="text-4xl font-bold leading-relaxed mb-10">
               {insightMessage}
             </h2>
+
+            {/* loading */}
+            <div className="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 animate-loading rounded-full" />
+            </div>
+
+            <p className="text-zinc-500 text-sm mt-4">
+              Processando análise neural...
+            </p>
           </div>
         )}
       </div>
