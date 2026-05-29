@@ -22,9 +22,9 @@ export async function POST() {
         ],
 
         back_urls: {
-          success: "https://SEU-DOMINIO.vercel.app/premium-result",
-          failure: "https://SEU-DOMINIO.vercel.app/checkout",
-          pending: "https://SEU-DOMINIO.vercel.app/checkout",
+          success: "https://cdsmartquiz.vercel.app/premium-result",
+          failure: "https://cdsmartquiz.vercel.app/checkout",
+          pending: "https://cdsmartquiz.vercel.app/checkout",
         },
 
         auto_return: "approved",
